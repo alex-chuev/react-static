@@ -235,11 +235,18 @@ export const prepareRoutes = async config => {
 
   const templateImports = templates
     .map(
-      template =>
-        `import ${template.replace(/[^a-zA-Z]/g, '_')} from '${path.relative(
+      template => {
+        const importPath = path.relative(
           config.paths.DIST,
           path.resolve(config.paths.ROOT, template),
-        )}'`,
+        );
+
+        if (path.sep === path.win32.sep) {
+          importPath.replace(path.sep, path.posix.sep);
+        }
+
+        `import ${template.replace(/[^a-zA-Z0-9]/g, '_')} from '${importPath}'`
+      },
     )
     .join('\n')
 
